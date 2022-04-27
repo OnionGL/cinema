@@ -1,54 +1,38 @@
-import React,{useEffect} from 'react'
+import React,{useEffect , useState} from 'react'
 import { useSelector , useDispatch } from 'react-redux'
 import style from "./Cinema.module.css"
 import { NavLink } from 'react-router-dom';
 import { getCinemaSelectorSuper, getTotalPageSelector , getIsFetchingSelector } from '../../redux/cinema-selector';
 import { getCinemaAPI } from '../../redux/cinema-reducer';
-import ReactPaginate from 'react-paginate';
+import Pagination from '@mui/material/Pagination';
 import Preloader from '../../Preloader/Preloader';
 
 
 
 const Cinema = () => {
    const dispatch = useDispatch()
+   const [page , setPage] = useState(1)
    const cinema = useSelector(getCinemaSelectorSuper)
    const totalPage = useSelector(getTotalPageSelector)
    const isFetching = useSelector(getIsFetchingSelector)
    useEffect(() => {
       dispatch(getCinemaAPI(1))
    }, [dispatch])
-   const handleClicked = (data) => {
-      let currentPage = data.selected + 1
-      dispatch(getCinemaAPI(currentPage))
-   }
+   useEffect(() => {
+      dispatch(getCinemaAPI(page))
+   },[page])
    return <>
+               <Pagination style={{
+                  marginLeft: 250,
+                  paddingTop: 20,
+                  color: "#fff"
+               }} onChange={(_ ,value) => setPage(value)} count={totalPage} color="primary" />
       {isFetching ? <Preloader /> : 
       <div  className={style.cinema}>
          <div className="container">
                <div className="row">
                <div className={style.number__container + ' ' + "col-md-12"}>
-                  <ReactPaginate
-                  className={style.paginator}
-                  previousLabel={"Back"}
-                  nextLabel={"Next"}
-                  breakLabel={"..."}
-                  pageCount={totalPage > 20 ? 20 : totalPage}
-                  marginPagesDisplayed={2}
-                  pageRangeDisplayed={5}
-                  onPageChange={handleClicked}
-                  containerClassName={"pagination"}
-                  pageClassName={"page-item"}
-                  pageLinkClassName={"page-link"}
-                  previousClassName={"page-item"}
-                  previousLinkClassName={"page-link"}
-                  nextClassName={"page-item"}
-                  nextLinkClassName={"page-link"}
-                  breakClassName={"page-item"}
-                  breakLinkClassName={"page-link"}
-                  activeClassName={"active"}
-                  />
                </div>
-
                      <div className="container">
                <div className="row">
                      {cinema.map(item =>  
